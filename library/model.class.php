@@ -8,7 +8,7 @@ class Model
   protected $_primary;
 
   private $_sql;
-  private $data;
+  private $_data;
 
   private $_select = "";
   private $_join = "";
@@ -126,18 +126,18 @@ class Model
 
   public function data($data)
   {
-    $this->data = "";
+    $this->_data = "";
     foreach ($data as $key => $value) {
-      $this->data .= " $key='$value' ,";
+      $this->_data .= " $key='$value' ,";
     }
-    $this->data = substr($this->data, 0, -1);
+    $this->_data = substr($this->_data, 0, -1);
     return $this;
   }
 
   public function insert()
   {
     try {
-      $sql = " INSERT INTO " . $this->_table . " SET " . $this->data;
+      $sql = " INSERT INTO " . $this->_table . " SET " . $this->_data;
       return $this->_dbh->query($sql);
     } catch (PDOException $e) {
       die("Tidak Dapat Menyimpan Data" . $e->getMessage());
@@ -154,7 +154,7 @@ class Model
   public function update($condition = " WHERE ", $data = " id = 0")
   {
     try {
-      $sql = " UPDATE " . $this->_table . " SET " . $this->data . " " . $condition . " " . $data;
+      $sql = " UPDATE " . $this->_table . " SET " . $this->_data . " " . $condition . " " . $data;
       return $this->_dbh->query($sql);
     } catch (PDOException $e) {
       die("Tidak Dapat Memperbarui" . $e->getMessage());

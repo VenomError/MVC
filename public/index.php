@@ -16,11 +16,10 @@ require_once(ROOT . '/library/view.class.php');
 require_once(ROOT . '/library/controller.class.php');
 
 //membuat function autoload
-function _autoload($className)
-{
+spl_autoload_register(function ($className) {
   $dir = ROOT . DS . str_replace("\\", DS, $className) . '.php';
   if (file_exists($dir)) require($dir);
-}
+});
 
 // membuat function unutkmengatur pesan error
 function setReporting()
@@ -32,19 +31,26 @@ function setReporting()
     error_reporting(E_ALL);
     ini_set('display_errors', 0);
     ini_set('log_errors', 1);
-    ini_set('error_log_file', ROOT . "/tmp/log/error.log");
+    ini_set('error_log', ROOT . "/tmp/log/error.log");
   }
 }
 
 //membuat funcion untuk memanggil controller sesuai nilai $url 
 function callHook()
 {
+  $configPath = ROOT . '/config/config.php';
+  if (!file_exists($configPath)) {
+    die('Config file not found! ' . $configPath);
+  }
+  require_once($configPath);
+
   global $url;
   $urlArray = explode('/', $url);
 
   $controller = (!empty($urlArray[0])) ? $urlArray[0] : DEFAULT_CONTROLLER;
+  $controllerPath = ROOT . DS . 'app' . DS . 'controllers' . DS . ucfirst($controller) . 'Controller.php';
 
-  $controllerPath = ROOT . '/app/controllers/' . ucfirst($controller) . '.controller.php';
+  // $controllerPath = ROOT . '/app/controllers/' . ucfirst($controller) . 'Controller.php';
   if (file_exists($controllerPath)) {
     array_shift($urlArray);
     $action = (!empty($urlArray[0])) ? $urlArray[0] : 'index';

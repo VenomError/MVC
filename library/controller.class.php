@@ -21,8 +21,6 @@ class Controller
     $view = $this->view('template');
     $view->bind('viewName', $viewName);
     $view->bind('data', $data);
-
-    return $view;
   }
 
 

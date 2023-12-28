@@ -5,9 +5,9 @@ class home extends Model
   {
     parent::__construct();
     $this->_table = 'tabel_user';
-    // $data = $this->select()->orderBy('id_user', 'DESC')->get();
-    // echo json_encode($data);
-    // echo '<br>' . $this->count();
+    $data = $this->select()->orderBy('id_user', 'DESC')->get();
+    echo json_encode($data);
+    echo '<br>' . $this->count();
     // $this->data(
     //   [
     //     'nama_lengkap' => 'nijdiads',
