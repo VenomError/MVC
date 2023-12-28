@@ -3,12 +3,12 @@
 class Model
 {
 
-  protected $_conn;
+  protected $_dbh;
   protected $_table;
   protected $_primary;
 
   private $_sql;
-  private $_data;
+  private $data;
 
   private $_select = "";
   private $_join = "";
@@ -18,9 +18,11 @@ class Model
 
   public function __construct()
   {
-    $this->_conn = mysqli_connect(DB_HOST, DB_USER, DB_PASSWORD, DB_NAME);
-    if (!$this->_conn) {
-      die("Error" . mysqli_connect_error());
+    try {
+      $this->_dbh = new PDO("" . DB_DRIVER . ":host=" . DB_HOST . ";dbname=" . DB_NAME, DB_USER, DB_PASSWORD);
+      $this->_dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    } catch (PDOException $e) {
+      echo "Koneksi gagal" . $e->getMessage();
     }
   }
 
@@ -48,21 +50,130 @@ class Model
       $this->_where  .= " WHERE ";
       foreach ($condition as $cond) {
         if (is_array($cond)) {
-          $this->_where .=  " $cond[0] $cond[1] $cond[2] AND ";
+          $this->_where .= " $cond[0] $cond[1] $cond[2] AND ";
         } else {
-          $this->_where .=  " $condition[0] $condition[1] $condition[2] AND  ";
+          $this->_where .= " $condition[0] $condition[1] '$condition[2]' AND ";
           break;
         }
       }
-      $this->_where = substr($this->_where, 0, -3);
+      $this->_where = substr($this->_where, 0, -5); // Ubah -3 menjadi -5
     }
     return $this;
   }
 
+  public function orderBy($col, $by = "ASC")
+  {
+    $this->_order = " ORDER BY $col $by ";
+    return $this;
+  }
 
+  public function limit($value1, $value2 = 0)
+  {
+    if ($value2 == 0) $this->_limit = " LIMIT $value1 ";
+    else $this->_limit = " LIMIT $value1 , $value2 ";
+    return $this;
+  }
 
+  public function join($table, $param, $join = " JOIN ")
+  {
+    $this->_join = "";
+    if (is_array($table)) {
+      foreach ($table as $tbl) {
+        $this->_join .= " $join $tbl ";
+      }
+    } else {
+      $this->_join .= " $join $table ";
+    }
+    foreach ($param as $key => $val) {
+      $this->_join .= " ON $key = $val ";
+    }
+    return $this;
+  }
+
+  public function get()
+  {
+    try {
+      if ($this->_sql == NULL) {
+        $sql = $this->_select . " " . $this->_join . " " . $this->_where . " " . $this->_order . " " . $this->_limit;
+      } else {
+        $sql = $this->_sql;
+      }
+      $query = $this->_dbh->query($sql);
+      $data = array();
+      while ($row = $query->fetch()) {
+        array_push($data, $row);
+      }
+      return $data;
+    } catch (PDOException $e) {
+      die("Tidak dapat menampilkan data: " . $e->getMessage());
+    }
+  }
+
+  public function count()
+  {
+    try {
+      if ($this->_sql == NULL) {
+        $sql = $this->_select . " " . $this->_join . " " . $this->_where . " " . $this->_order . " " . $this->_limit;
+      } else {
+        $sql = $this->_sql;
+      }
+      $query = $this->_dbh->query($sql);
+      return $query->rowCount();
+    } catch (PDOException $e) {
+      die("Tidak Dapat Menampilkan Jumlah" . $e->getMessage());
+    }
+  }
+
+  public function data($data)
+  {
+    $this->data = "";
+    foreach ($data as $key => $value) {
+      $this->data .= " $key='$value' ,";
+    }
+    $this->data = substr($this->data, 0, -1);
+    return $this;
+  }
+
+  public function insert()
+  {
+    try {
+      $sql = " INSERT INTO " . $this->_table . " SET " . $this->data;
+      return $this->_dbh->query($sql);
+    } catch (PDOException $e) {
+      die("Tidak Dapat Menyimpan Data" . $e->getMessage());
+    }
+  }
+
+  public function find($id)
+  {
+    $this->_primary = " id  " . $this->_table;
+    $this->_where = " WHERE $this->_primary=$id ";
+    return $this;
+  }
+
+  public function update($condition = " WHERE ", $data = " id = 0")
+  {
+    try {
+      $sql = " UPDATE " . $this->_table . " SET " . $this->data . " " . $condition . " " . $data;
+      return $this->_dbh->query($sql);
+    } catch (PDOException $e) {
+      die("Tidak Dapat Memperbarui" . $e->getMessage());
+    }
+  }
+
+  public function delete($row = '', $object = '')
+  {
+
+    try {
+
+      $sql = "DELETE FROM " . $this->_table . " WHERE " . $row . " = " . $object;
+      return $this->_dbh->query($sql);
+    } catch (PDOException $e) {
+      die("Tidak Dapat Menghapus data : " . $e->getMessage());
+    }
+  }
   public function __destruct()
   {
-    $this->_conn->close();
+    $this->_dbh = NULL;
   }
 }

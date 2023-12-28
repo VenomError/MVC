@@ -22,17 +22,17 @@ function _autoload($className)
   if (file_exists($dir)) require($dir);
 }
 
-//membuat function unutkmengatur pesan error
+// membuat function unutkmengatur pesan error
 function setReporting()
 {
   if (DEVELOPMENT_ENVIRONMANT == true) {
     error_reporting(E_ALL);
-    ini_set('display_errors', 'On');
+    ini_set('display_errors', 1);
   } else {
     error_reporting(E_ALL);
-    ini_set('display_errors', 'Off');
-    ini_set('log_errors', 'On');
-    ini_set('error_log', ROOT . '/tmp/log/error.log');
+    ini_set('display_errors', 0);
+    ini_set('log_errors', 1);
+    ini_set('error_log_file', ROOT . "/tmp/log/error.log");
   }
 }
 

@@ -12,6 +12,8 @@ class Controller
   protected function model($modelName)
   {
     require_once(ROOT . "/app/models/" . $modelName . ".model.php");
+    $model = new $modelName();
+    return $model;
   }
 
   protected function template($viewName, $data = array())
