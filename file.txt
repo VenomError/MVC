@@ -1,0 +1,72 @@
+// Contoh penggunaan operasi Create (Insert)
+$dataToInsert = [
+    'nama_mahasiswa' => 'John Doe',
+    'nim' => '123456789',
+    'jurusan' => 'Teknik Informatika',
+    'kelas' => 'A1',
+    'ttl' => 'Jakarta, 01 Januari 2000',
+    'alamat' => 'Jl. Contoh No. 123',
+    'semester' => '4',
+    'avatars' => 'avatar.jpg',
+    'password' => 'password123'
+];
+
+$modelMahasiswa = new Mahasiswa();
+$modelMahasiswa->insert($dataToInsert);
+
+
+// Contoh penggunaan operasi Read (Select)
+$modelMahasiswa = new Mahasiswa();
+
+// Membaca semua data
+$allMahasiswa = $modelMahasiswa->select()->get();
+
+// Membaca data dengan kondisi tertentu
+$filteredMahasiswa = $modelMahasiswa->select()
+    ->where(['nim', '=', '123456789'])
+    ->get();
+
+
+// Contoh penggunaan operasi Update
+$modelMahasiswa = new Mahasiswa();
+$dataToUpdate = [
+    'nama_mahasiswa' => 'Updated Name',
+    'nim' => '987654321',
+    // ... (data lainnya yang ingin diubah)
+];
+
+$modelMahasiswa->update($dataToUpdate)
+    ->where(['id', '=', '1'])
+    ->get();
+
+
+// Contoh penggunaan operasi Delete dengan menggunakan nilai ID langsung
+$modelMahasiswa = new Mahasiswa();
+$modelMahasiswa->delete('1'); // Menggunakan nilai ID sebagai argumen
+\
+
+// Dalam class Mahasiswa di model
+public function deleteAvatar($fileName)
+{
+    // Path ke file avatar
+    $path = ROOT . DS . 'public' . DS . 'assets' . DS . 'avatars' . DS . $fileName;
+
+    // Hapus file jika ada
+    if (file_exists($path)) {
+        unlink($path);
+
+        // Set nilai kolom avatars ke NULL di database
+        $this->query("UPDATE mahasiswa SET avatars = NULL WHERE avatars = :fileName")
+             ->data(['fileName' => $fileName])
+             ->get();
+
+        return true; // File berhasil dihapus dan nilai di database diubah
+    } else {
+        return false; // File tidak ditemukan atau gagal dihapus
+    }
+}
+
+// Pemanggilan di controller
+$id = 1; // Ganti dengan id_mahasiswa yang sesuai
+$d = $this->model('mahasiswa')->select()->where('id_mahasiswa', '=', $id)->get();
+$this->model('mahasiswa')->deleteAvatar($d[0]['avatars']);

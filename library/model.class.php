@@ -16,6 +16,7 @@ class Model
   private $_order = "";
   private $_limit = "";
 
+
   public function __construct()
   {
     try {
@@ -23,6 +24,53 @@ class Model
       $this->_dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
       echo "Koneksi gagal" . $e->getMessage();
+    }
+  }
+
+  public function uploadAvatar($file)
+  {
+    $targetDirectory = ROOT . DS . 'public' . DS . 'assets' . DS . 'avatars' . DS; // Sesuaikan dengan struktur folder di server Anda
+    $uploadOk = 1;
+
+    $fileName = basename($file["name"]);
+    $uniqueFileName = uniqid() . '_' . $fileName;
+    $targetFile = $targetDirectory . $uniqueFileName;
+    $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
+
+    $check = getimagesize($file["tmp_name"]);
+    if ($check === false) {
+      // File bukan gambar
+      return false;
+    }
+
+    if ($file["size"] > 2 * 1024 * 1024) {
+      // File terlalu besar
+      return false;
+    }
+
+    $allowedFormats = array("jpg", "jpeg", "png", "gif");
+    if (!in_array($imageFileType, $allowedFormats)) {
+      // Format file tidak diizinkan
+      return false;
+    }
+
+    if (move_uploaded_file($file["tmp_name"], $targetFile)) {
+      // Upload berhasil, kembalikan nama file unik
+      return $uniqueFileName;
+    } else {
+      // Gagal upload
+      return false;
+    }
+  }
+  function deleteAvatar($fileName)
+  {
+    $path = ROOT . DS . 'public' . DS . 'assets' . DS . 'avatars' . DS . $fileName;
+
+    if (file_exists($path)) {
+      unlink($fileName);
+      return true; // File berhasil dihapus
+    } else {
+      return false; // File tidak ditemukan atau gagal dihapus
     }
   }
 

@@ -1,11 +1,15 @@
 <?php
 
+use app\controllers\MainController;
 
-class LoginController extends Controller
+class LoginController extends MainController
 {
   public function index()
   {
-    $this->view("login");
+    $data = [
+      "title" => "login"
+    ];
+    $this->loginTemplate("login", $data);
   }
 
   public function check()
@@ -24,7 +28,7 @@ class LoginController extends Controller
     if ($jml > 0) {
       $_SESSION['username'] = $data[0]['username'];
       $_SESSION['password'] = $data[0]['password'];
-      $this->redirect('dashboard');
+      // $this->redirect('dashboard');
       $view = $this->view('login');
       $view->bind('msg', 'Login Failed !');
     } else {

@@ -21,19 +21,19 @@ spl_autoload_register(function ($className) {
   if (file_exists($dir)) require($dir);
 });
 
-// membuat function unutkmengatur pesan error
-function setReporting()
-{
-  if (DEVELOPMENT_ENVIRONMANT == true) {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 1);
-  } else {
-    error_reporting(E_ALL);
-    ini_set('display_errors', 0);
-    ini_set('log_errors', 1);
-    ini_set('error_log', ROOT . "/tmp/log/error.log");
-  }
-}
+// // membuat function unutkmengatur pesan error
+// function setReporting()
+// {
+//   if (DEVELOPMENT_ENVIRONMANT == true) {
+//     error_reporting(E_ALL);
+//     ini_set('display_errors', 'on');
+//   } else {
+//     error_reporting(E_ALL);
+//     ini_set('display_errors', 'off');
+//     ini_set('log_errors', 'on');
+//     ini_set('error_log', ROOT . "/tmp/log/error.log");
+//   }
+// }
 
 //membuat funcion untuk memanggil controller sesuai nilai $url 
 function callHook()
@@ -63,11 +63,19 @@ function callHook()
     if (method_exists($object, $action)) {
       call_user_func_array(array($object, $action), $parameter);
     } else {
-      die('Action Not Found !');
+      // die('Action Not Found !');
+      if (method_exists($object, 'index')) {
+        call_user_func_array(array(
+          $object, 'index'
+        ), $parameter);
+      } else {
+        die('Action Not Found !');
+      }
     }
   } else {
-    die('Controller Not Found !');
+    header('Location: ' . BASE_PATH . '' . DEFAULT_CONTROLLER);
+    exit();
   }
 }
-setReporting();
+// setReporting();
 callHook();

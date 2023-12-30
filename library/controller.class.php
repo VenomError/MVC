@@ -21,6 +21,8 @@ class Controller
     $view = $this->view('template');
     $view->bind('viewName', $viewName);
     $view->bind('data', $data);
+
+    return $view;
   }
 
 
@@ -36,6 +38,21 @@ class Controller
   public function redirect($url = "")
   {
     header('location: ' . BASE_PATH . DS . $url);
+  }
+
+  public function redirectData($url = "", $data = array())
+  {
+    // Simpan data di sesi
+    $_SESSION['redirect'] = $data;
+
+    // Lakukan redirect
+    header('location: ' . BASE_PATH . $url);
+    exit();
+  }
+
+  public function sendData($viewName, $data = array())
+  {
+    $this->template($viewName, $data)->render();
   }
 
   protected function validate($data)
