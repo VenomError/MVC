@@ -1,72 +1,94 @@
-// Contoh penggunaan operasi Create (Insert)
-$dataToInsert = [
-    'nama_mahasiswa' => 'John Doe',
-    'nim' => '123456789',
-    'jurusan' => 'Teknik Informatika',
-    'kelas' => 'A1',
-    'ttl' => 'Jakarta, 01 Januari 2000',
-    'alamat' => 'Jl. Contoh No. 123',
-    'semester' => '4',
-    'avatars' => 'avatar.jpg',
-    'password' => 'password123'
-];
+// Buat objek CustomModel
+$customModel = new CustomModel();
 
-$modelMahasiswa = new Mahasiswa();
-$modelMahasiswa->insert($dataToInsert);
+// Contoh pengambilan data tanpa filter
+$dataAll = $customModel->table('your_table_name')->select()->get();
+var_dump($dataAll);
 
+// Contoh pengambilan data dengan filter where
+$dataFiltered = $customModel->table('your_table_name')->where(['column1' => 'value1', 'column2' => 'value2'])->get();
+var_dump($dataFiltered);
 
-// Contoh penggunaan operasi Read (Select)
-$modelMahasiswa = new Mahasiswa();
+// Contoh penambahan data baru
+$newData = ['column1' => 'new_value1', 'column2' => 'new_value2'];
+$customModel->table('your_table_name')->create($newData);
 
-// Membaca semua data
-$allMahasiswa = $modelMahasiswa->select()->get();
+// Contoh pencarian data berdasarkan ID
+$foundData = $customModel->table('your_table_name')->find(1);
+var_dump($foundData);
 
-// Membaca data dengan kondisi tertentu
-$filteredMahasiswa = $modelMahasiswa->select()
-    ->where(['nim', '=', '123456789'])
+// Contoh pembaruan data berdasarkan ID
+$updateData = ['column1' => 'updated_value'];
+$customModel->table('your_table_name')->update(1, $updateData);
+
+// Contoh penghapusan data berdasarkan ID
+$customModel->table('your_table_name')->delete(1);
+
+Select
+$model = new Model();
+$data = $model->table('nama_tabel')
+    ->select('kolom1, kolom2')
+    ->where(['kolom3' => 'nilai'])
+    ->orderBy('kolom1', 'DESC')
+    ->limit(10)
     ->get();
 
+// Output hasil query
+var_dump($data);
 
-// Contoh penggunaan operasi Update
-$modelMahasiswa = new Mahasiswa();
-$dataToUpdate = [
-    'nama_mahasiswa' => 'Updated Name',
-    'nim' => '987654321',
-    // ... (data lainnya yang ingin diubah)
-];
+INSERT 
+$model = new Model();
+$created = $model->table('nama_tabel')
+    ->create(['kolom1' => 'nilai1', 'kolom2' => 'nilai2']);
 
-$modelMahasiswa->update($dataToUpdate)
-    ->where(['id', '=', '1'])
+// Output status berhasil atau tidak
+var_dump($created);
+
+UPDATE 
+$model = new Model();
+$updated = $model->table('nama_tabel')
+    ->where(['kolom1' => 'nilai1'])
+    ->update(['kolom2' => 'nilai_baru']);
+
+// Output status berhasil atau tidak
+var_dump($updated);
+
+DELETE 
+$model = new Model();
+$deleted = $model->table('nama_tabel')
+    ->where(['kolom1' => 'nilai1'])
+    ->delete();
+
+// Output status berhasil atau tidak
+var_dump($deleted);
+
+SELECT ID 
+$model = new Model();
+$record = $model->table('nama_tabel')
+    ->select()
+    ->where(['id' => 1])
+    ->find(1);
+
+// Output hasil query
+var_dump($record);
+
+COUNT 
+$model = new Model();
+$record = $model->table('nama_tabel')
+    ->select()
+    ->where(['id' => 1])
+    ->find(1);
+
+// Output hasil query
+var_dump($record);
+
+JOIN 
+$model = new Model();
+$data = $model->table('tabel_utama')
+    ->select('tabel_utama.*, tabel_terkait.kolom_terkait')
+    ->join('tabel_terkait', 'tabel_utama.id = tabel_terkait.tabel_utama_id')
     ->get();
 
+// Output hasil query
+var_dump($data);
 
-// Contoh penggunaan operasi Delete dengan menggunakan nilai ID langsung
-$modelMahasiswa = new Mahasiswa();
-$modelMahasiswa->delete('1'); // Menggunakan nilai ID sebagai argumen
-\
-
-// Dalam class Mahasiswa di model
-public function deleteAvatar($fileName)
-{
-    // Path ke file avatar
-    $path = ROOT . DS . 'public' . DS . 'assets' . DS . 'avatars' . DS . $fileName;
-
-    // Hapus file jika ada
-    if (file_exists($path)) {
-        unlink($path);
-
-        // Set nilai kolom avatars ke NULL di database
-        $this->query("UPDATE mahasiswa SET avatars = NULL WHERE avatars = :fileName")
-             ->data(['fileName' => $fileName])
-             ->get();
-
-        return true; // File berhasil dihapus dan nilai di database diubah
-    } else {
-        return false; // File tidak ditemukan atau gagal dihapus
-    }
-}
-
-// Pemanggilan di controller
-$id = 1; // Ganti dengan id_mahasiswa yang sesuai
-$d = $this->model('mahasiswa')->select()->where('id_mahasiswa', '=', $id)->get();
-$this->model('mahasiswa')->deleteAvatar($d[0]['avatars']);

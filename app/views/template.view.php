@@ -5,6 +5,7 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title><?= $data['title'] ?> </title>
+  <link rel="shortcut icon" href="<?= BASE_ASSETS ?>favicon.png" type="image/x-icon">
 
   <!-- General CSS Files -->
   <link rel="stylesheet" href="<?= BASE_ASSETS  ?>assets/modules/bootstrap/css/bootstrap.min.css">
@@ -16,6 +17,8 @@
   <link rel="stylesheet" href="<?= BASE_ASSETS  ?>assets/modules/datatables/DataTables-1.10.16/css/dataTables.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= BASE_ASSETS  ?>assets/modules/datatables/Select-1.2.4/css/select.bootstrap4.min.css">
   <link rel="stylesheet" href="<?= BASE_ASSETS ?>assets/modules/izitoast/css/iziToast.min.css">
+  <link rel="stylesheet" href="<?= BASE_ASSETS ?>assets/modules/chocolat/dist/css/chocolat.css">
+
 
 
 
@@ -262,9 +265,9 @@
             <li class="<?php echo $data['navbarDashboard'] ?? ''; ?>"><a class="nav-link" href="<?= BASE_PATH  ?>dashboard"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
 
             <li class="menu-header">Database </li>
-            <li class="<?php echo $data['navbarDosen'] ?? ''; ?>"><a class="nav-link" href="<?= BASE_PATH ?>mahasiswa"><i class="fas fa-microscope"></i> <span>Dosen</span></a></li>
+            <li class="<?php echo $data['navbarDosen'] ?? ''; ?>"><a class="nav-link" href="<?= BASE_PATH ?>dosen"><i class="fas fa-microscope"></i> <span>Dosen</span></a></li>
             <li class="<?php echo $data['navbarMHS'] ?? ''; ?>"><a class="nav-link" href="<?= BASE_PATH ?>mahasiswa"><i class="fas fa-graduation-cap"></i></i> <span>Mahasiswa</span></a></li>
-            <li class="<?php echo $data['navbarJurusan'] ?? ''; ?>"><a class="nav-link" href="credits.html"><i class="fas fa-user-graduate"></i> <span>Jurusan</span></a></li>
+            <li class="<?php echo $data['navbarJurusan'] ?? ''; ?>"><a class="nav-link" href="<?= BASE_PATH ?>jurusan"><i class="fas fa-user-graduate"></i> <span>Jurusan</span></a></li>
             <li class="<?php echo $data['navbarSemester'] ?? ''; ?>"><a class="nav-link " href="credits.html"><i class="fas fa-school"></i> <span>Semester</span></a></li>
             <li class="<?php echo $data['navbarMatakuliah'] ?? ''; ?>"><a class="nav-link" href="credits.html"><i class="fas fa-laptop-code"></i><span>Matakuliah</span></a></li>
             <li class="menu-header">Jadwal </li>
@@ -284,7 +287,7 @@
               if (isset($data['bread'])) {
                 foreach ($data['bread'] as $bread) {
               ?>
-                  <div class="breadcrumb-item"><a href="<?= BASE_PATH ?><?= $bread['master'] ?>"><?= $bread['child'] ?></a></div>
+                  <div class="breadcrumb-item  "><a href="<?= BASE_PATH ?><?= $bread['master'] ?>" class="text-<?= $bread['text'] ?>"><?= $bread['child'] ?></a></div>
               <?php }
               }
               ?>
@@ -323,6 +326,9 @@
   <script src="<?= BASE_ASSETS ?>assets/modules/datatables/Select-1.2.4/js/dataTables.select.min.js"></script>
   <script src="<?= BASE_ASSETS ?>assets/modules/jquery-ui/jquery-ui.min.js"></script>
   <script src="<?= BASE_ASSETS ?>assets/modules/izitoast/js/iziToast.min.js"></script>
+  <script src="<?= BASE_ASSETS ?>assets/modules/chocolat/dist/js/jquery.chocolat.min.js"></script>
+  <script src="<?= BASE_ASSETS ?>assets/modules/jquery-ui/jquery-ui.min.js"></script>
+
 
 
 

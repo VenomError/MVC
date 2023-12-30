@@ -10,7 +10,6 @@ class Model
     'where' => [],
     'order' => '',
     'limit' => '',
-    'join' => [],
   ];
 
   public function __construct()
@@ -30,12 +29,6 @@ class Model
   public function table($table)
   {
     $this->table = $table;
-    return $this;
-  }
-
-  public function setIdColumn($column)
-  {
-    $this->primary = $column;
     return $this;
   }
 
@@ -71,17 +64,11 @@ class Model
     return $this;
   }
 
-  public function join($table, $on, $type = 'INNER')
-  {
-    $this->data['join'][] = "$type JOIN $table ON $on";
-    return $this;
-  }
-
   public function get()
   {
     try {
       $sql = $this->data['select'] . " FROM " . $this->table . " " .
-        $this->buildJoin() . " " . $this->buildWhere() . " " . $this->data['order'] . " " . $this->data['limit'];
+        $this->buildWhere() . " " . $this->data['order'] . " " . $this->data['limit'];
 
       $stmt = $this->dbh->prepare($sql);
       $this->bindWhereParams($stmt);
@@ -100,7 +87,39 @@ class Model
       throw new Exception("Tidak dapat menampilkan data: " . $e->getMessage());
     }
   }
+  public function join($table, $on, $type = 'INNER')
+  {
+    $this->data['join'][] = "$type JOIN $table ON $on";
+    return $this;
+  }
+  private function buildWhere()
+  {
+    if (!empty($this->data['where'])) {
+      $whereClause = "WHERE ";
+      foreach ($this->data['where'] as $key => $value) {
+        $whereClause .= "$key = :$key AND ";
+      }
+      return rtrim($whereClause, ' AND ');
+    }
+    return '';
+  }
 
+  private function bindWhereParams($stmt)
+  {
+    foreach ($this->data['where'] as $key => $value) {
+      $stmt->bindParam(":$key", $value);
+    }
+  }
+
+  private function resetData()
+  {
+    $this->data['select'] = '';
+    $this->data['where'] = [];
+    $this->data['order'] = '';
+    $this->data['limit'] = '';
+  }
+
+  // Metode lainnya tetap sama...
   public function create($data)
   {
     try {
@@ -156,7 +175,6 @@ class Model
       throw new Exception("Delete failed: " . $e->getMessage());
     }
   }
-
   public function find($id)
   {
     try {
@@ -164,9 +182,7 @@ class Model
 
       $stmt = $this->dbh->prepare($sql);
       $this->bindWhereParams($stmt);
-
-      // Gunakan kolom id yang telah diatur
-      $stmt->bindParam(":{$this->primary}", $id);
+      $stmt->bindParam(":id", $id);
 
       $stmt->execute();
 
@@ -175,11 +191,10 @@ class Model
       throw new Exception("Find failed: " . $e->getMessage());
     }
   }
-
   public function count()
   {
     try {
-      $sql = "SELECT COUNT(*) as count FROM " . $this->table . " " . $this->buildJoin() . " " . $this->buildWhere();
+      $sql = "SELECT COUNT(*) as count FROM " . $this->table . " " . $this->buildWhere();
 
       $stmt = $this->dbh->prepare($sql);
       $this->bindWhereParams($stmt);
@@ -193,80 +208,8 @@ class Model
       throw new Exception("Count failed: " . $e->getMessage());
     }
   }
-
   public function __destruct()
   {
     $this->dbh = NULL;
-  }
-
-  private function buildJoin()
-  {
-    if (!empty($this->data['join'])) {
-      return implode(" ", $this->data['join']);
-    }
-    return '';
-  }
-
-  private function buildWhere()
-  {
-    if (!empty($this->data['where'])) {
-      $whereClause = "WHERE ";
-      foreach ($this->data['where'] as $key => $value) {
-        $whereClause .= "$key = :$key AND ";
-      }
-      return rtrim($whereClause, ' AND ');
-    }
-    return '';
-  }
-
-  private function bindWhereParams($stmt)
-  {
-    foreach ($this->data['where'] as $key => $value) {
-      $stmt->bindParam(":$key", $value);
-    }
-  }
-
-  private function resetData()
-  {
-    $this->data['select'] = '';
-    $this->data['where'] = [];
-    $this->data['order'] = '';
-    $this->data['limit'] = '';
-    $this->data['join'] = [];
-  }
-  public function uploadAvatar($file)
-  {
-    $targetDirectory = ROOT . DS . 'public' . DS . 'assets' . DS . 'avatars' . DS; // Sesuaikan dengan struktur folder di server Anda
-    $uploadOk = 1;
-
-    $fileName = basename($file["name"]);
-    $uniqueFileName = uniqid() . '_' . $fileName;
-    $targetFile = $targetDirectory . $uniqueFileName;
-    $imageFileType = strtolower(pathinfo($targetFile, PATHINFO_EXTENSION));
-
-    $check = getimagesize($file["tmp_name"]);
-    if ($check === false) {
-      // File bukan gambar
-      return false;
-    }
-
-    if ($file["size"] > 2 * 1024 * 1024) {
-      // File terlalu besar
-      return false;
-    }
-
-    $allowedFormats = array("jpg", "jpeg", "png", "gif");
-    if (!in_array($imageFileType, $allowedFormats)) {
-      // Format file tidak diizinkan
-      return false;
-    }
-
-    if (move_uploaded_file($file["tmp_name"], $targetFile)) {
-      // Upload berhasil, kembalikan nama file unik
-      return $uniqueFileName;
-    } else {
-      // Gagal upload
-      return false;
-    }
   }
 }

@@ -7,12 +7,12 @@
       </div>
       <div class="card-body">
         <div class="table-responsive">
-          <table class="table table-striped" id="table-2">
+          <table class="table table-striped" id="table-1">
             <thead>
               <tr>
-                <th>
+                <!-- <th>
                   NO
-                </th>
+                </th> -->
                 <th>NIM</th>
                 <th>Avatars</th>
                 <th>Alamat</th>
@@ -32,9 +32,9 @@
                 ?>
                   <input type="hidden" name="id" value="<?= $d['id_mahasiswa'] ?>">
                   <tr>
-                    <td>
+                    <!-- <td>
                       <?= $no++  ?>
-                    </td>
+                    </td> -->
                     <td><?= $d['nim'] ?></a></td>
                     <td>
                       <img alt="image" src="<?= BASE_ASSETS ?>/assets/avatars/<?= $d['avatars'] ?>" class="rounded-circle" width="35" data-toggle="tooltip" title="<?= $d['nama_mahasiswa'] ?>">

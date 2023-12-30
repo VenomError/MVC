@@ -9,7 +9,7 @@ class DashboardController extends MainController
   function __construct()
   {
     parent::__construct();
-    $this->model('pegawai');
+    $this->model('mahasiswa');
   }
   public function index()
 
