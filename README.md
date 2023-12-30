@@ -11,7 +11,7 @@ Penjelasan singkat tentang proyek dan apa yang membuatnya menonjol.
 
 ## Demo
 
-![Demo](demo.gif)
+![Demo](favicon.png)
 
 Lihat [demo lengkap](link-demo) untuk melihat proyek dalam aksi.
 
